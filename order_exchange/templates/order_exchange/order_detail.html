@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Detail</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-between mb-3">
+            <div class="col-md-4">
+                <a href="{% url 'orders:index' %}" class="btn btn-primary">Главная страница</a>
+            </div>
+            <div class="col-md-4 text-right">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'users:logout' %}" class="btn btn-danger">Выйти</a>
+                {% else %}
+                    <a href="{% url 'users:login' %}" class="btn btn-primary">Войти</a>
+                    <a href="{% url 'users:registration' %}" class="btn btn-success">Зарегистрироваться</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        {{ object.name }}
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Описание:</strong> {{ object.description }}</p>
+                        <p><strong>Стоимость:</strong> {{ object.value }}</p>
+                        <p><strong>Заказчик:</strong> 
+                            <a href="{% url 'users:user_profile' object.customer.username %}">
+                                {{ object.customer.username }}
+                            </a>
+                        </p>
+                        {% if object.executor %}
+                            <p><strong>Исполнитель:</strong> 
+                                <a href="{% url 'users:user_profile' object.executor.username %}">
+                                    {{ object.executor.username }}
+                                </a>
+                            </p>
+                        {% endif %}
+                        {% if user.is_authenticated and user.is_executor and not object.executor %}
+                            <form action="{% url 'orders:accept_order' order_id=object.pk %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">Принять в работу</button>
+                            </form>
+                        {% endif %}
+                        {% if user.is_authenticated and user == object.customer %}
+                            <a href="{% url 'orders:delete_order' order_id=object.pk %}" class="btn btn-danger">Удалить заказ</a>
+                            <a href="{% url 'orders:edit_order' order_id=object.pk %}" class="btn btn-info">Редактировать заказ</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

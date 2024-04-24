@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-between mb-3">
+            <div class="col-md-4">
+                <a href="{% url 'orders:index' %}" class="btn btn-primary">Главная страница</a>
+            </div>
+            <div class="col-md-4 text-right">
+                <a href="{% url 'users:logout' %}" class="btn btn-danger">Выйти</a>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        {% if profile.name %}
+                            Профиль пользователя {{ profile.name }}
+                        {% else %}
+                            Профиль пользователя {{ profile.username }}
+                        {% endif %}
+                        <span class="badge badge-primary">{{ profile.role }}</span>
+                    </div>
+                    <div class="card-body">
+                        {% if profile.photo %}
+                            <img src="{{ profile.photo.url }}" alt="User Photo" class="img-fluid rounded mb-3">
+                        {% endif %}
+                        {% if profile.contact_details %}
+                            <p><strong>Контактные данные:</strong> {{ profile.contact_details }}</p>
+                        {% endif %}
+                        <h4>Список заказов пользователя:</h4>
+                        <ul class="list-group">
+                            {% for order in object_list %}
+                                <li class="list-group-item">
+                                    <h5>{{ order.name }}</h5>
+                                    <p>{{ order.description }}</p>
+                                    <a href="{% url 'orders:order_detail' order.pk %}" class="btn btn-info btn-sm">Подробнее</a>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item">Пользователь еще не сделал заказов.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
